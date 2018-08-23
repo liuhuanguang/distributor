@@ -1,0 +1,16 @@
+{
+    "name": "Distributor",
+    "alias": "distributor",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Distributor\\Providers\\DistributorServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}
