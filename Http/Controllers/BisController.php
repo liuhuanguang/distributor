@@ -9,28 +9,31 @@ use Illuminate\Support\Facades\DB;
 
 class BisController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Response
-     */
 
-    public function __construct()
+
+
+    //session()->forget('bis');
+
+
+    public function __construct(Request $request)
     {
 
-        session()->forget('bis');
-        $bis = session()->get('bis');
-        var_dump($bis);
-        if($bis == null){
-            return view('distributor::login');
-        }
-    }
+        $this->request = request();
+        // 验证是否登录
+        $this->middleware(function ($request, $next) {
+            if (!\Session::get('bis')) {
+                redirect('distributor/login')->send();exit();
+            }
 
+            return $next($request);
+        });
+
+    }
 
     public function index()
     {
         $bis = session()->get('bis');
-        var_dump($bis);
-        $bis = DB::table('bis')->where('id',$bis->id)->first();
+        $bis = DB::table('bis')->where('id',$bis->id)->select('bonus','all_bonus')->first();
         return view('distributor::index')->with(['bis'=>$bis]);
     }
 
@@ -39,8 +42,14 @@ class BisController extends Controller
         $bis = session()->get('bis');
         if(request()->all()){
             $data = request()->all();
-            DB::table('bis')->where('id',$bis->id)->update($data);
-            return redirect(url('distributor/bis'))->with('修改成功');
+            $result = DB::table('bis')->where('id',$bis->id)->update($data);
+
+            if($result !== false){
+                echo json_encode(['code'=>1,'msg'=>'设置成功']);
+            }else{
+                echo json_encode(['code'=>0,'msg'=>'服务器繁忙']);
+            }
+            exit;
         }
 
         $bis = DB::table('bis')->where('id',$bis->id)->first();
@@ -50,15 +59,16 @@ class BisController extends Controller
     public function my_code()
     {
         $bis = session()->get('bis');
-        $bis = DB::table('bis')->where('id',$bis->id)->first();
-        return view('distributor::my_code')->with(['bis'=>$bis]);
+        $code = DB::table('bis')->where('id',$bis->id)->value('qr_code');
+        $code = '/qrcodes/'.$code;
+        return view('distributor::my_code')->with(['code'=>$code]);
     }
 
     public function extract()
     {
 
         $bis = session()->get('bis');
-        $bis = DB::table('bis')->where('id',$bis->id)->first();
+        $bis = DB::table('bis')->where('id',$bis->id)->select('id','bonus')->first();
         $amount = request()->input('amount');
 
         if($amount){
@@ -70,9 +80,12 @@ class BisController extends Controller
                     ];
             $res = DB::table('bis_extract')->where('id',$bis->id)->insert($data);
             if($res){
-//                DB::table('bis')->where('id',$bis->id)->decrement('bonus',$amount);
-                return redirect(url('distributor/bis'))->with('申请成功');
+                DB::table('bis')->where('id',$bis->id)->decrement('bonus',$amount);
+                echo json_encode(['code'=>1,'msg'=>'申请已提交']);
+            }else{
+                echo json_encode(['code'=>0,'msg'=>'服务器繁忙']);
             }
+            exit;
         }
 
         return view('distributor::extract')->with(['bis'=>$bis]);
