@@ -9,12 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class BisController extends Controller
 {
-
-
-
     //session()->forget('bis');
-
-
     public function __construct(Request $request)
     {
 
@@ -33,7 +28,9 @@ class BisController extends Controller
     public function index()
     {
         $bis = session()->get('bis');
-        $bis = DB::table('bis')->where('id',$bis->id)->select('bonus','all_bonus')->first();
+        $bis = DB::table('bis')->where('id',$bis->id)->select('id','bonus','all_bonus')->first();
+        $bis->to_bonus = DB::table('bis_extract')->where([['bis_id','=',$bis->id],['status','=',0]]) ->sum('amount');
+
         return view('distributor::index')->with(['bis'=>$bis]);
     }
 
@@ -95,7 +92,7 @@ class BisController extends Controller
     public function order_list()
     {
         $bis = session()->get('bis');
-        $result = DB::table('bis_order')->where('bis_id',$bis->id)->get();
+        $result = DB::table('order')->select('order_sn','created_at','order_pay_price')->where([['bis_id','=',$bis->id],['pay_status','=',1]])->get();
         return view('distributor::order_list')->with(['result'=>$result]);
     }
 

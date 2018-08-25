@@ -6,12 +6,12 @@
 <div class="order_head"><p>经销商中心</p></div>
 <div class="gemstone_zs">
 	<div class="zs_box">
-		<p>{!! $bis->bonus !!}</p>
+		<p>{!! $bis->bonus !!}￥</p>
 		<h4>余额</h4>
 	</div>
 	<div class="gemstone_zl container between">
-		<div><span>{{$bis->all_bonus}}</span><h4>经销总额</h4></div>
-		<div><span>{{$bis->all_bonus-$bis->bonus}}</span><h4>已提现</h4></div>
+		<div><span>{{$bis->all_bonus}}￥</span><h4>经销总额</h4></div>
+		<div><span>{{$bis->to_bonus}}￥</span><h4>申请提现</h4></div>
 	</div>
 </div>
 <ul class="my_list">
