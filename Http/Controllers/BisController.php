@@ -49,8 +49,16 @@ class BisController extends Controller
             exit;
         }
 
-        $bis = DB::table('bis')->where('id',$bis->id)->first();
-        return view('distributor::info')->with(['bis'=>$bis]);
+        $bis =  DB::table('bis')->where('id',$bis->id)->first();
+        $bank = DB::table('bank')->where([['is_show','=','1']])->select('number','name','id')->get();
+
+        foreach ($bank as $k=>$v){
+            $bankname[] = $v->name;
+        }
+
+        $bankname = json_encode($bankname);
+
+        return view('distributor::info')->with(['bis'=>$bis,'bankname'=>$bankname]);
     }
 
     public function my_code()
@@ -65,15 +73,16 @@ class BisController extends Controller
     {
 
         $bis = session()->get('bis');
-        $bis = DB::table('bis')->where('id',$bis->id)->select('id','bonus')->first();
+
+
         $amount = request()->input('amount');
 
         if($amount){
             $data = [ 'amount' => $amount,
                       'bis_id' => $bis->id,
                       'status' => 0,
-                      'create_at'=> time(),
-                      'update_at'=> time()
+                      'create_at'=> date('Y-m-d H:i:s',time()),
+                      'update_at'=> date('Y-m-d H:i:s',time())
                     ];
             $res = DB::table('bis_extract')->where('id',$bis->id)->insert($data);
             if($res){
@@ -85,7 +94,16 @@ class BisController extends Controller
             exit;
         }
 
-        return view('distributor::extract')->with(['bis'=>$bis]);
+        $date = date('Y-m-d H:i:s',strtotime("-1 month"));
+
+        $bonus  = DB::table('bis_log')->where([['bis_id','=',$bis->id,],['created_at','<',$date]])->sum('bonus');
+
+        $bonus = $bonus*config('bis_one')/100;
+
+        $amount = DB::table('bis_extract')->where([['bis_id','=',$bis->id],['status','=',0]])->sum('amount');
+        $available = $bonus - $amount;
+
+        return view('distributor::extract')->with(['available'=>$available]);
     }
 
 

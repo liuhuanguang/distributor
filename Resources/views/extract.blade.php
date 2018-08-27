@@ -5,9 +5,9 @@
 {{--<body class="bfff">--}}
 <div class="order_head"><a class="fanhui back" href=""><i class="iconfont icon-jiantou"></i></a><p>申请提现</p></div>
 <div class="tixian">
-	<div class="head">可提现剩余金额：<span>{{$bis->bonus}}</span>元</div>
+	<div class="head">可提现剩余金额：<span>{{$available}}</span>元</div>
 	<div class="price cl-a">
-		<input type="hidden" id="bonus" value="{{$bis->bonus}}">
+		<input type="hidden" id="available" value="{{$available}}">
 		<p class="fl">￥</p><input class="fl" id="amount" type="number" name="" placeholder="输入提现金额">
 	</div>
 	<div class="tishi">提现金额不能小于1.00元</div>
@@ -29,7 +29,7 @@
 			    return;
 			}
 
-			if($('#bonus').val() < amount ){
+			if($('#available').val() < amount ){
                 $.toast('超过可提取的额度');
 			    return;
 			}

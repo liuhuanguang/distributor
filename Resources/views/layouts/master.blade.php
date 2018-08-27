@@ -24,7 +24,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" >
     <meta name = "format-detection" content="telephone = no" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="{{config('site_name')}}">
     <title>登录</title>
     <link rel="stylesheet" href="{{ URL::asset('/packages/SUI-Mobile/dist/css/sm.min.css')}}">
     <link rel="stylesheet" href="{{URL::asset('/static/fonts/iconfont.css')}}">

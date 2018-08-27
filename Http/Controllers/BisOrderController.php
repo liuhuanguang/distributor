@@ -49,15 +49,17 @@ class BisOrderController extends Controller
 
         $data = [
                   'order_sn' => $this->getOrderId(),
+                  'order_type' => 1,
                   'bis_id' => $bis_id,
                   'user_id' => $user_id,
                   'order_pay_price' => $paid_price,
                   'pay_status' => 0,
                   'created_at' => date('Y-m-d H:i:s',time())
-                ]; 
+                ];
+
 
         $order_id = DB::table('order')->insertGetId($data);
-        return redirect('payments/pay?order_id='.$order_id.'&order_type=1');
+        return redirect('payments/pay?order_id='.$order_id);
     }
 
     protected function getOrderId($prefix = 'BIS')
